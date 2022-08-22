@@ -540,6 +540,19 @@ and $Pr(\mu = \mu_0)$
 
 ## The p-value ConTROVersy/ContraVersy
 
+|![](images/repro.png){height=2.5in}|
+|-|
+|https://twitter.com/fmg_twtr/status/1334884184675012609|
+
+## The p-value ConTROVersy/ContraVersy
+
+|![](images/repro2.png){height=2.5in}|
+|-|
+|https://twitter.com/fmg_twtr/status/1334884184675012609|
+
+
+## The p-value ConTROVersy/ContraVersy
+
 ```{r, eval=FALSE, include=FALSE}
 download.file(url = "https://getlighthouse.com/blog/wp-content/uploads/2014/09/Break-the-Cycle-1.png",
               destfile = "images/cycle.png", mode = 'wb')
