@@ -1,8 +1,8 @@
 ---
 title: 'Week 6: Bootstrapping Confidence Intervals'
-subtitle: 'Two more kinds of Statistical Inference Tools'
+subtitle: 'AKA Estimation, a new kind of Statistical Inference Tool'
 author: "Scott Schwartz"
-date: "May 18, 2021"
+date: "October 17, 2021"
 output:
   beamer_presentation:
     theme: Pittsburgh
@@ -53,7 +53,7 @@ normal_sample <- geom_histogram(data = tibble(x=rnorm(n=n)),
                                 aes(x=x, y=..density..), bins=30)
 # https://r-charts.com/distribution/histogram-density-ggplot2/
 # https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
-ggplot() + normal_sample + normal_pdf # {r,fig.width=6, fig.height=2}
+ggplot() + normal_sample + normal_pdf + xlim(-4,4) # {r,fig.width=6, fig.height=2}
 ```
 
 
@@ -69,14 +69,14 @@ normal_sample <- geom_histogram(data = tibble(x=rnorm(n=n)),
                                 aes(x=x, y=..density..), bins=15)
 # https://r-charts.com/distribution/histogram-density-ggplot2/
 # https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
-ggplot() + normal_sample + normal_pdf # {r,fig.width=6, fig.height=2}
+ggplot() + normal_sample + normal_pdf + xlim(-4,4) # {r,fig.width=6, fig.height=2}
 ```
 
 ## How Well Do Samples Approximate Populations?
 
 ### Clearly samples can't totally approximate populations
 
-but if we're using them to learn population **parameters** they can be sufficient...
+but if we're using them to learn population **parameters** it may be "sufficient"...
 \huge $$\textcolor{gray}{\text{(statistic) }} \bar x \text{ approximates \textcolor{gray}{(parameter)} } p$$\normalsize
 if $x_i$ is only either $0$ or $1$ \textcolor{gray}{\text{(and $p = Pr(x_i=1)$)}}
 \huge $$\textcolor{gray}{\text{(statistic) }} \bar x \text{ approximates \textcolor{gray}{(parameter)} } \mu$$
@@ -94,7 +94,7 @@ otherwise \textcolor{gray}{\text{(and $\mu = E[x_i]$)}}
 support <- seq(-3,3,.01)
 normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
                         aes(x=x, y=`normal pdf`))
-ggplot() + normal_pdf 
+ggplot() + normal_pdf + xlim(-4,4)
 ```
 
 ::::
@@ -104,7 +104,7 @@ ggplot() + normal_pdf
 set.seed(130); n <- 30; support <- seq(-3,3,.01)
 normal_sample <- geom_histogram(data = tibble(x=rnorm(n=n)), 
                                 aes(x=x, y=..density..), bins=15)
-ggplot() + normal_sample
+ggplot() + normal_sample + xlim(-4,4)
 ```
 
 ::::
@@ -119,13 +119,13 @@ set.seed(130); for(i in 1:N){
 } # Does Bootstrap Approximation Work?
 ```
 
-```{r, echo=FALSE, fig.width=6, fig.height=1.25}
+```{r, echo=FALSE, fig.width=6, fig.height=1.2}
 sampling_distribution <- c(population_sample_means, bootstrap_sample_means)
 simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") + xlim(-4,4)
 ```
 
 ## Figure Code
@@ -140,7 +140,7 @@ simulation_method <- c(rep("Population Sampling",N),
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") 
 # Does Bootstrap Approximation Work?
 ```
 
@@ -150,12 +150,12 @@ simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") 
 ```
 
 ## How Well Do Samples Approximate Populations?
 
-```{r, echo=FALSE, fig.width=6, fig.height=1.8}
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
 set.seed(4); n <- 30
 normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
                         aes(x=x, y=`normal pdf`))
@@ -164,8 +164,9 @@ normal_sample <- geom_histogram(data = tibble(x=x),
                                 aes(x=x, y=..density..), bins=15)
 # https://r-charts.com/distribution/histogram-density-ggplot2/
 # https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
-ggplot() + normal_sample + normal_pdf # {r,fig.width=6, fig.height=2}
-
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank())# {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
 population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
 set.seed(130); for(i in 1:N){
   population_sample_means[i] <- mean(rnorm(n=n)) 
@@ -176,13 +177,39 @@ simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") + xlim(-1.75,2)
 ```
-
 
 ## How Well Do Samples Approximate Populations?
 
-```{r, echo=FALSE, fig.width=6, fig.height=1.8}
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
+set.seed(4); n <- 30
+normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
+                        aes(x=x, y=`normal pdf`))
+x <- rnorm(n=n)
+normal_sample <- geom_histogram(data = tibble(x=x), 
+                                aes(x=x, y=..density..), bins=15)
+# https://r-charts.com/distribution/histogram-density-ggplot2/
+# https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank()) # {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
+population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
+set.seed(130); for(i in 1:N){
+  population_sample_means[i] <- mean(rnorm(n=n)) 
+  bootstrap_sample_means[i] <- mean(sample(x, prob=rep(1/n,n), size=n, replace=TRUE))
+} # Does Bootstrap Approximation Work?
+sampling_distribution <- c(population_sample_means, bootstrap_sample_means)
+simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
+tibble(`Sampling Distribution` = sampling_distribution,
+       `Simulation\nMethod` = simulation_method) %>% 
+  ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution")
+```
+
+## How Well Do Samples Approximate Populations?
+
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
 set.seed(13); n <- 30
 normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
                         aes(x=x, y=`normal pdf`))
@@ -191,8 +218,9 @@ normal_sample <- geom_histogram(data = tibble(x=x),
                                 aes(x=x, y=..density..), bins=15)
 # https://r-charts.com/distribution/histogram-density-ggplot2/
 # https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
-ggplot() + normal_sample + normal_pdf # {r,fig.width=6, fig.height=2}
-
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank()) # {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
 population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
 set.seed(130); for(i in 1:N){
   population_sample_means[i] <- mean(rnorm(n=n)) 
@@ -203,13 +231,39 @@ simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") + xlim(-1.75,2)
 ```
-
 
 ## How Well Do Samples Approximate Populations?
 
-```{r, echo=FALSE, fig.width=6, fig.height=1.8}
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
+set.seed(13); n <- 30
+normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
+                        aes(x=x, y=`normal pdf`))
+x <- rnorm(n=n)
+normal_sample <- geom_histogram(data = tibble(x=x), 
+                                aes(x=x, y=..density..), bins=15)
+# https://r-charts.com/distribution/histogram-density-ggplot2/
+# https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank()) # {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
+population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
+set.seed(130); for(i in 1:N){
+  population_sample_means[i] <- mean(rnorm(n=n)) 
+  bootstrap_sample_means[i] <- mean(sample(x, prob=rep(1/n,n), size=n, replace=TRUE))
+} # Does Bootstrap Approximation Work?
+sampling_distribution <- c(population_sample_means, bootstrap_sample_means)
+simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
+tibble(`Sampling Distribution` = sampling_distribution,
+       `Simulation\nMethod` = simulation_method) %>% 
+  ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") 
+```
+
+## How Well Do Samples Approximate Populations?
+
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
 set.seed(10); n <- 30
 normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
                         aes(x=x, y=`normal pdf`))
@@ -218,8 +272,9 @@ normal_sample <- geom_histogram(data = tibble(x=x),
                                 aes(x=x, y=..density..), bins=15)
 # https://r-charts.com/distribution/histogram-density-ggplot2/
 # https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
-ggplot() + normal_sample + normal_pdf # {r,fig.width=6, fig.height=2}
-
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank()) # {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
 population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
 set.seed(130); for(i in 1:N){
   population_sample_means[i] <- mean(rnorm(n=n)) 
@@ -230,9 +285,35 @@ simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
 tibble(`Sampling Distribution` = sampling_distribution,
        `Simulation\nMethod` = simulation_method) %>% 
   ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
-  geom_boxplot() + xlab("Sampling Distribution of the Sample Mean") 
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") + xlim(-1.75,2)
 ```
 
+## How Well Do Samples Approximate Populations?
+
+```{r, echo=FALSE, fig.width=6, fig.height=1.5}
+set.seed(10); n <- 30
+normal_pdf <- geom_line(data = tibble(`normal pdf`=dnorm(support), x=support),
+                        aes(x=x, y=`normal pdf`))
+x <- rnorm(n=n)
+normal_sample <- geom_histogram(data = tibble(x=x), 
+                                aes(x=x, y=..density..), bins=15)
+# https://r-charts.com/distribution/histogram-density-ggplot2/
+# https://stackoverflow.com/questions/16712800/overlay-lines-and-hist-with-ggplot2
+ggplot() + normal_sample + normal_pdf + theme(axis.title.x=element_blank()) # {r,fig.width=6, fig.height=2}
+```
+```{r, echo=FALSE, fig.width=4.5, fig.height=1.6}
+population_sample_means <- 1:N; bootstrap_sample_means <- 1:N
+set.seed(130); for(i in 1:N){
+  population_sample_means[i] <- mean(rnorm(n=n)) 
+  bootstrap_sample_means[i] <- mean(sample(x, prob=rep(1/n,n), size=n, replace=TRUE))
+} # Does Bootstrap Approximation Work?
+sampling_distribution <- c(population_sample_means, bootstrap_sample_means)
+simulation_method <- c(rep("Population Sampling",N),rep("Bootstrap Sampling",N))
+tibble(`Sampling Distribution` = sampling_distribution,
+       `Simulation\nMethod` = simulation_method) %>% 
+  ggplot(aes(x=`Sampling Distribution`, y=`Simulation\nMethod`)) +
+  geom_boxplot() + xlab("Sample Mean Sampling Distribution") 
+```
 
 ## Sanity Check
 
@@ -241,12 +322,11 @@ tibble(`Sampling Distribution` = sampling_distribution,
 3. What is a parameter? 
 4. What is the sample `x = c(x_1,x_2,...x_n)`?
 5. What makes the sample a better approximation of the population?
-6. What happens if you get a "bad" sample?
+6. What happens if you get a "bad" sample? Can anything be done about this?
 7. What is a statistic?
 8. What is $\bar x$?
 9. What is the **sampling distribution** of $\bar x$?
 10. How is the **sampling distribution** of $\bar x$ created?
-11. What happens if you get a "bad" sample? What can be done about this?
 
 ## How Well Do Samples Approximate Populations?
 
@@ -432,7 +512,6 @@ for(i in 1:R){
 ::::
 :::
 
-
 ## Sanity Check
 
 1. What is the "population" when bootstrapping a sampling distribution?
@@ -441,189 +520,39 @@ for(i in 1:R){
 4. What value of the `probs` parameter gives a 90% confidence intervals?
 5. How does the confidence level relate to the width of the Confidence Intervals?
 6. Are there one or two `for` loops when we're bootstrapping a confidence interval?
+7. Why?
+
+## Statistical Grammar Police
+
+\begin{block}{For a 95\% Confidence Interval we say}
+we have 95\% \textbf{Confidence} the true parameter value is contained in the Interval
+\end{block}
+
+- We use the term **Confidence** (as opposed to *probability* or *chance*) to
+intentionally signal that this is a **Confidence Interval** formulation.
+
+- We **DO NOT** want to say there's a 95% probability (or chance) that
+ the true parameter value will be contained in some some interval. 
+
+  - This **might** be misinterpreted as saying that the true parameter is usually in the interval but sometimes not; but parameters are only just in the interval or not*
+  
+\vspace{.1in}
+
+### Are we just splitting hairs here?
+
+The chance the constructed confidence interval bounds the true parameter value is 95%
 
 
-## Confidence Intervals VS Hypothesis Testing
-
-:::columns
-::::column
-
-### Confidence Intervals $[\hat \mu_{lower}, \hat \mu_{upper}]$
-
-\vspace{.15cm}
-
-1. **Approximate** population as sample
-2. Bootstrap **sampling distribution**
-3. Define Confidence Interval with sampling distribution percentiles
-
-\vspace{.15cm}
-**$[(1-\alpha)\times100]$% Confidence Interval**
-
-\vspace{.15cm}
-- $\alpha$ chance the confidence interval does not contain the true parameter value
-
-\vspace{.15cm}
-- This is not $Pr(\mu \in [\hat \mu_{lower}, \hat \mu_{upper}])$, it is
-$Pr([\hat \mu_{lower}, \hat \mu_{upper}] \text{ bounds } \mu)$
-
-\vspace{.15cm}
-- \textbf{*}True $\mu$ isn't a random thing, but $[\hat \mu_{lower}, \hat \mu_{upper}]$ based on the sample is
-
-::::
-::::column
-
-### Hypothesis Testing $H_0: \mu = \mu_0 \vphantom{\hat \mu_{upper}]}$
-
-\vspace{.15cm}
-
-1. **Assume** a population through $H_0$
-2. Get **sampling distribution** under $H_0$
-3. Compute the sample p-value and either Reject or Fail to Reject $H_0$
-
-\vspace{.15cm}
-**$\alpha$-level significance testing**
-
-\vspace{.15cm}
-- $\alpha$ chance of a Type I Error if $H_0$ rejected for a p-value smaller than $\alpha$
-
-\vspace{.15cm}
-- p-values are neither $Pr(H_0 \text{ is } \texttt{TRUE})$ nor $Pr(\mu = \mu_0)$
-
-\vspace{.15cm}
-- \textbf{*}True $\mu$ and hence $H_0$ aren't random things, but sample based p-values are
-::::
-:::
-
-## Sanity Check
-
-For a 95% Confidence Interval and $\alpha$-level significance test
-
-1. What is the probability $\mu \in [\hat \mu_{lower}, \hat \mu_{upper}]$
-2. What is the probability that $[\hat \mu_{lower}, \hat \mu_{upper}] \text{ bounds } \mu)$?
-3. What is $Pr(H_0 \text{ is } \texttt{TRUE})$?
-4. What is $Pr(\mu = \mu_0)$?
-5. What is the p-value?
-6. What is the role of the test statistic, parameter, population, and sampling distribution relative to the p-value?
-
-## The p-value ConTROVersy/ContraVersy
-
-```{r, eval=FALSE, include=FALSE}
-download.file(url = "https://i.imgflip.com/1mt8h2.jpg",
-              destfile = "images/will.jpg", mode = 'wb')
-```
 
 
-:::columns
-::::column
 
-- [Why are p-values controversial?](https://www.tandfonline.com/doi/full/10.1080/00031305.2016.1277161) 
-- [What a nerdy debate about p-values shows about science and how to fix it](https://www.vox.com/science-and-health/2017/7/31/16021654/p-values-statistical-significance-redefine-0005)
-- [The reign of the p-value is over: what alternative analyses could we employ to fill the power vacuum?](https://royalsocietypublishing.org/doi/10.1098/rsbl.2019.0174)
-- [Scientists rise up against statistical significance](https://www.nature.com/articles/d41586-019-00857-9)
-- [Statistics experts urge scientists to rethink the p-value](https://www.spectrumnews.org/news/statistics-experts-urge-scientists-rethink-p-value)
+## Using Confidence Intervals
 
-::::
-::::column
-
-![](images/will.jpg){width=175px}
-
-::::
-:::
-
-The main problem is wrongly interpreting p-values as $Pr(H_0 \text{ is } \texttt{TRUE})$
-and $Pr(\mu = \mu_0)$
-
-### but the deeper problems with p-values are 
-
-- introduced [here](https://www2.stat.duke.edu/~berger/p-values.html) and presented [here](https://www.jarad.me/courses/stat587Eng/slides/Inference/I06-Pvalues/why_pvalues_dont_mean_what_you_think_they_mean.pdf)
-- and rely upon understanding the simulation [here](https://jaradniemi.shinyapps.io/pvalue/)
-
-## The p-value ConTROVersy/ContraVersy
-
-|![](images/repro.png){height=2.5in}|
-|-|
-|https://twitter.com/fmg_twtr/status/1334884184675012609|
-
-## The p-value ConTROVersy/ContraVersy
-
-|![](images/repro2.png){height=2.5in}|
-|-|
-|https://twitter.com/fmg_twtr/status/1334884184675012609|
-
-
-## The p-value ConTROVersy/ContraVersy
-
-```{r, eval=FALSE, include=FALSE}
-download.file(url = "https://getlighthouse.com/blog/wp-content/uploads/2014/09/Break-the-Cycle-1.png",
-              destfile = "images/cycle.png", mode = 'wb')
-```
-
-### George Cobb, Professor Emeritus, Mount Holyoke College
-
-Q: Why do colleges/grad schools use $\alpha = 0.05$ thresholds for statistical significance?
-
-A: Because that's still what the scientific community and journal editors use.
-
-Q: Why do so many people use $\alpha = 0.05$ thresholds for statistical significance?
-
-A: Because that's what they were taught in college or grad school.
-
-*$\alpha = 0.05$ is arbitrary: better to either simply comment on the strength of the evidence against $H_0$ by reporting the p-value (or at least choose $\alpha$ before calculating the p-value)*
-
-
-:::columns
-::::column
-
-| |
-|-|
-|![](images/cycle.png){height=100px}|
-
-::::
-::::column
-
-|p-value| evidence against $H_0$|
-|-|-|
-|above 0.1| None |
-|0.05 to 0.1| Weak |
-|0.01 to 0.05 | Moderate |
-|0.0001 to 0.01 | Strong |
-|below 0.0001 | Very Strong |
-
-::::
-:::
-
-
-## FIX The p-value ConTROVersy/ContraVersy
-
-0. Don't interpret p-values as $Pr(H_0 \text{ is } \texttt{TRUE})$
-or $Pr(\mu = \mu_0)$:
-
-   p-values are the probability of observing a test statistic that is
-   *as or more extreme* than the one we got **if the NULL Hypothesis is actually `TRUE`**
-
-1. Want to control Type I error? Set $\alpha$ and do a $\alpha$-significance test
-
-2. Want to use a "measure of evidence" perspective without controlling Type I error? 
-
-   Don't retroactively interpret p-value in terms of Type I error...
-
-\small
-| | | | | | |
-|-|-|-|-|-|-|
-|p-value |above 0.1 |0.05 to 0.1| 0.01 to 0.05 | 0.0001 to 0.01 | below 0.0001 |
-| evidence against $H_0$ |None | Weak | Moderate | Strong | Very Strong |
-
-\vspace{-.25cm}
-\normalsize
-3. Instead just use a **Confidence Interval**: get BOTH the estimate *AND* its strength
-
-## FIX The p-value ConTROVersy/ContraVersy
-
-### Do we need formal Hypotheses? Interpret and make decisions about these...
+### Do we need formal Hypotheses? Can actionable decisions be made with these?
 
 ```{r, echo=FALSE, fig.width=5.5, fig.height=2.5}
 ggplot() + xlim(c(0,1)) + ylim(c(0,5)) +
-  labs(title="95% Confidence Intervals for The Number of People who Agree") +
+  labs(title="95% Confidence Intervals of Proportion of People who Agree") +
   geom_line(data=tibble(x=c(.33,1), y=c(1,1)), aes(x=x,y=y), size=3) +
   geom_line(data=tibble(x=c(.6,1), y=c(2,2)), aes(x=x,y=y), size=3) +
   geom_line(data=tibble(x=c(.8,1), y=c(3,3)), aes(x=x,y=y), size=3) +  
@@ -670,7 +599,19 @@ $\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\qua
 
 \vspace{.1in}
 
-## How Do We Get Tighter Confidence Intervals: $n$
+
+## Sanity Check
+
+So what's the difference between Confidence Intervals and Hypothesis Tests?
+
+1. What are the different "use cases" for each?
+2. Which one gives *Estimation*?
+3. Are they both *Inference*?
+4. Can both be use to make decisions?
+5. How so?
+6. When are these decisions more power/useful/trustworthy/actionable?
+
+## How Do We Get Tighter Confidence Intervals? $n$
 
 ```{r, echo=FALSE}
 R <- 100; N <- 1000#00?
@@ -706,27 +647,6 @@ results %>% ggplot(aes(x=n, y=`Confidence Interval Widths`)) +
 
 https://www.zoology.ubc.ca/~whitlock/Kingfisher/CLT.htm
 
-
-
-## Statistical Grammar Police
-
-\begin{block}{For a 95\% Confidence Interval we say}
-we have 95\% \textbf{Confidence} the true parameter value is contained in the Interval
-\end{block}
-
-- We use the term **Confidence** (as opposed to *probability* or *chance*) to
-intentionally signal that this is a **Confidence Interval** formulation.
-
-- We **DO NOT** want to say there's a 95% probability (or chance) that
- the true parameter value will be contained in some some interval. 
-
-  - This **might** be misinterpreted as saying that the true parameter is usually in the interval but sometimes not; but parameters are only just in the interval or not*
-  
-\vspace{.1in}
-
-### Are we just splitting hairs here?
-
-The chance the constructed confidence interval bounds the true parameter value is 95%
 
 
 ## The Sampling Distribution of $\bar x$ VS Skewness
@@ -820,6 +740,208 @@ tibble(x=x_bar_sampling_distribution) %>% ggplot() +
 
 ::::
 :::
+
+## Confidence Intervals VS Hypothesis Testing
+
+:::columns
+::::column
+
+### Confidence Intervals $[\hat \mu_{lower}, \hat \mu_{upper}]$
+
+\vspace{.15cm}
+
+1. **Approximate** population as sample
+2. Bootstrap **sampling distribution**
+3. Define Confidence Interval with sampling distribution percentiles
+
+\vspace{.15cm}
+**$[(1-\alpha)\times100]$% Confidence Interval**
+
+\vspace{.15cm}
+- $\alpha$ chance the confidence interval does not bound the true parameter value
+
+\vspace{.15cm}
+- This is not $Pr(\mu \in [\hat \mu_{lower}, \hat \mu_{upper}])$, it is
+$Pr([\hat \mu_{lower}, \hat \mu_{upper}] \text{ bounds } \mu)$
+
+\vspace{.15cm}
+- \textbf{*}True $\mu$ isn't a random thing, but $[\hat \mu_{lower}, \hat \mu_{upper}]$ based on the sample is
+
+::::
+::::column
+
+### Hypothesis Testing $H_0: \mu = \mu_0 \vphantom{\hat \mu_{upper}]}$
+
+\vspace{.15cm}
+
+1. **Assume** a population through $H_0$
+2. Get **sampling distribution** under $H_0$
+3. Compute the sample p-value and either Reject or Fail to Reject $H_0$
+
+\vspace{.15cm}
+**$\alpha$-level significance testing**
+
+\vspace{.15cm}
+- $\alpha$ chance of a Type I Error if $H_0$ rejected for a p-value smaller than $\alpha$
+
+\vspace{.15cm}
+- p-values are neither $Pr(H_0 \text{ is } \texttt{TRUE})$ nor $Pr(\mu = \mu_0)$
+
+\vspace{.15cm}
+- \textbf{*}True $\mu$ and hence $H_0$ aren't random things, but sample-based p-values are
+::::
+:::
+
+## Sanity Check
+
+For a 95% Confidence Interval and $\alpha$-level significance test
+
+1. What is the probability $\mu \in [\hat \mu_{lower}, \hat \mu_{upper}]$
+2. What is the probability that $[\hat \mu_{lower}, \hat \mu_{upper}] \text{ bounds } \mu$?
+3. What is $Pr(H_0 \text{ is } \texttt{TRUE})$?
+4. What is $Pr(\mu = \mu_0)$?
+5. What is the p-value?
+6. What is the role of the test statistic, parameter, population, and sampling distribution relative to the *p-value*? And how about for a *confidence interval*?
+
+## The p-value ConTROVersy/ContraVersy
+
+```{r, eval=FALSE, include=FALSE}
+download.file(url = "https://i.imgflip.com/1mt8h2.jpg",
+              destfile = "images/will.jpg", mode = 'wb')
+```
+
+
+:::columns
+::::column
+
+- [Why are p-values controversial?](https://www.tandfonline.com/doi/full/10.1080/00031305.2016.1277161) 
+- [What a nerdy debate about p-values shows about science and how to fix it](https://www.vox.com/science-and-health/2017/7/31/16021654/p-values-statistical-significance-redefine-0005)
+- [The reign of the p-value is over: what alternative analyses could we employ to fill the power vacuum?](https://royalsocietypublishing.org/doi/10.1098/rsbl.2019.0174)
+- [Scientists rise up against statistical significance](https://www.nature.com/articles/d41586-019-00857-9)
+- [Statistics experts urge scientists to rethink the p-value](https://www.spectrumnews.org/news/statistics-experts-urge-scientists-rethink-p-value)
+
+::::
+::::column
+
+![](images/will.jpg){width=175px}
+
+::::
+:::
+
+The main problem is wrongly interpreting p-values as $Pr(H_0 \text{ is } \texttt{TRUE})$
+and $Pr(\mu = \mu_0)$
+
+### but the deeper problems with p-values are 
+
+- introduced [here](https://www2.stat.duke.edu/~berger/p-values.html) and presented [here](https://www.jarad.me/courses/stat587Eng/slides/Inference/I06-Pvalues/why_pvalues_dont_mean_what_you_think_they_mean.pdf)
+- and rely upon understanding the simulation [here](https://jaradniemi.shinyapps.io/pvalue/)
+
+## The p-value ConTROVersy/ContraVersy
+
+|![](images/repro.png){height=2.5in}|
+|-|
+|https://twitter.com/fmg_twtr/status/1334884184675012609|
+
+## The p-value ConTROVersy/ContraVersy
+
+|![](images/repro2.png){height=2.5in}|
+|-|
+|https://twitter.com/fmg_twtr/status/1334884184675012609|
+
+
+## The p-value ConTROVersy/ContraVersy
+
+```{r, eval=FALSE, include=FALSE}
+download.file(url = "https://getlighthouse.com/blog/wp-content/uploads/2014/09/Break-the-Cycle-1.png",
+              destfile = "images/cycle.png", mode = 'wb')
+```
+
+### George Cobb, Professor Emeritus, Mount Holyoke College
+
+*Q: Why do colleges/grad schools use $\alpha = 0.05$ thresholds for statistical significance?*
+
+**A: Because that's still what the scientific community and journal editors use.**
+
+*Q: Why do so many people use $\alpha = 0.05$ thresholds for statistical significance?*
+
+**A: Because that's what they were taught in college or grad school.**
+
+$\alpha = 0.05$ is arbitrary: better to either simply comment on the strength of the evidence against $H_0$ by reporting the p-value (or at least choose $\alpha$ before calculating the p-value)
+
+
+:::columns
+::::column
+
+| |
+|-|
+|![](images/cycle.png){height=100px}|
+
+::::
+::::column
+
+|p-value| evidence against $H_0$|
+|-|-|
+|above 0.1| None |
+|0.05 to 0.1| Weak |
+|0.01 to 0.05 | Moderate |
+|0.0001 to 0.01 | Strong |
+|below 0.0001 | Very Strong |
+
+::::
+:::
+
+
+## FIX The p-value ConTROVersy/ContraVersy
+
+0. Don't interpret p-values as $Pr(H_0 \text{ is } \texttt{TRUE})$
+or $Pr(\mu = \mu_0)$:
+
+   p-values are the probability of observing a test statistic that is
+   *as or more extreme* than the one we got **if the NULL Hypothesis was actually `TRUE`**
+
+1. Want to control Type I error? Set $\alpha$ and do a $\alpha$-significance test
+
+2. Want to use a "measure of evidence" perspective without controlling Type I error? 
+
+   Don't retroactively interpret p-value in terms of Type I error, and instead, say
+
+\small
+| | | | | | |
+|-|-|-|-|-|-|
+|p-value |above 0.1 |0.05 to 0.1| 0.01 to 0.05 | 0.0001 to 0.01 | below 0.0001 |
+| evidence against $H_0$ |None | Weak | Moderate | Strong | Very Strong |
+
+\vspace{-.25cm}
+\normalsize
+3. Or, use a **Confidence Interval**: get BOTH the estimate *AND* its strength. \textcolor{gray}{How?}
+
+## Winning
+
+```{r, eval=FALSE, include=FALSE}
+download.file(url = "https://i.pinimg.com/originals/eb/8f/d2/eb8fd20647c0b7c722c1dd935be8bc03.jpg",
+              destfile = "images/winning.jpg", mode = 'wb')
+download.file(url = "https://www.memecreator.org/static/images/memes/4952590.jpg",
+              destfile = "images/winning2.jpg", mode = 'wb')
+```
+
+| ![](images/winning.jpg){height=2in} | ![](images/winning2.jpg){height=2in} | 
+|-|-|
+
+
+## FIX The p-value ConTROVersy/ContraVersy
+
+### Do we need formal Hypotheses? Can actionable decisions be made with these?
+
+```{r, echo=FALSE, fig.width=5.5, fig.height=2.5}
+ggplot() + xlim(c(0,1)) + ylim(c(0,5)) +
+  labs(title="95% Confidence Intervals of Proportion of People who Agree") +
+  geom_line(data=tibble(x=c(.33,1), y=c(1,1)), aes(x=x,y=y), size=3) +
+  geom_line(data=tibble(x=c(.6,1), y=c(2,2)), aes(x=x,y=y), size=3) +
+  geom_line(data=tibble(x=c(.8,1), y=c(3,3)), aes(x=x,y=y), size=3) +  
+  geom_line(data=tibble(x=c(.95,1), y=c(4,4)), aes(x=x,y=y), size=3) +
+  xlab("Could you interpret these and use them to make decisions?")
+```
+
 
 ## Sanity Check
 
